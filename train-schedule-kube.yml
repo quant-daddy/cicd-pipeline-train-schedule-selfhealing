@@ -7,12 +7,11 @@ spec:
   selector:
     app: train-schedule
   ports:
-  - protocol: TCP
-    port: 8080
-    nodePort: 30080
+    - protocol: TCP
+      port: 8080
+      nodePort: 30080
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,7 +29,13 @@ spec:
         app: train-schedule
     spec:
       containers:
-      - name: train-schedule
-        image: $DOCKER_IMAGE_NAME:$BUILD_NUMBER
-        ports:
-        - containerPort: 8080
+        - name: train-schedule
+          image: $DOCKER_IMAGE_NAME:$BUILD_NUMBER
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
